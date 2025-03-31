@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diabetes Prediction</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Diabetes Prediction</h1>
+        <p><a href="{{ url_for('static', filename='test.txt') }}">Test Static File</a></p>
+        <form method="POST" action="/predict">
+            <label for="pregnancies">Pregnancies:</label><br>
+            <input type="number" id="pregnancies" name="pregnancies"><br><br>
+
+            <label for="glucose">Glucose:</label><br>
+            <input type="number" id="glucose" name="glucose"><br><br>
+
+            <label for="bloodpressure">Blood Pressure:</label><br>
+            <input type="number" id="bloodpressure" name="bloodpressure"><br><br>
+
+            <label for="skinthickness">Skin Thickness:</label><br>
+            <input type="number" id="skinthickness" name="skinthickness"><br><br>
+
+            <label for="insulin">Insulin:</label><br>
+            <input type="number" id="insulin" name="insulin"><br><br>
+
+            <label for="bmi">BMI:</label><br>
+            <input type="number" step="any" id="bmi" name="bmi"><br><br>
+
+            <label for="diabetespedigreefunction">Diabetes Pedigree Function:</label><br>
+            <input type="number" step="any" id="diabetespedigreefunction" name="diabetespedigreefunction"><br><br>
+
+            <label for="age">Age:</label><br>
+            <input type="number" id="age" name="age"><br><br>
+
+            <input type="submit" value="Predict">
+        </form>
+    </div>
+</body>
+</html>

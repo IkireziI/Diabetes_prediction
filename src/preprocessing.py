@@ -1,28 +1,50 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.impute import SimpleImputer
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from imblearn.over_sampling import SMOTE
+import os
 
-def handle_missing_zeros(df, columns_to_replace):
-    """Replaces zero values in specified columns with NaN."""
-    df[columns_to_replace] = df[columns_to_replace].replace(0, pd.NA)
-    return df
+scaler = MinMaxScaler()
 
-def impute_missing_values(df, strategy='mean'):
-    """Imputes missing values using the specified strategy."""
-    imputer = SimpleImputer(strategy=strategy)
-    df_imputed = pd.DataFrame(imputer.fit_transform(df), columns=df.columns)
-    return df_imputed
+def preprocess_data(dataset_path):
+    """
+    Preprocesses the diabetes dataset.
+    """
+    dataset = pd.read_csv(dataset_path)
+    dataset[["Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI"]] = dataset[["Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI"]].replace(0, np.nan)
+    # Impute NaN values (using median for robustness)
+    dataset['Glucose'] = dataset['Glucose'].fillna(dataset['Glucose'].median())
+    dataset['BloodPressure'] = dataset['BloodPressure'].fillna(dataset['BloodPressure'].median())
+    dataset['SkinThickness'] = dataset['SkinThickness'].fillna(dataset['SkinThickness'].median())
+    dataset['Insulin'] = dataset['Insulin'].fillna(dataset['Insulin'].median())
+    dataset['BMI'] = dataset['BMI'].fillna(dataset['BMI'].median())
 
-def scale_features(df, numerical_features):
-    """Scales numerical features using StandardScaler."""
-    scaler = StandardScaler()
-    df[numerical_features] = scaler.fit_transform(df[numerical_features])
-    return df
+    # --- Handling Outliers (for demonstration, you might want to handle this differently in production) ---
+    def remove_outliers_iqr(df, column):
+        Q1 = df[column].quantile(0.25)
+        Q3 = df[column].quantile(0.75)
+        IQR = Q3 - Q1
+        lower_bound = Q1 - 1.5 * IQR
+        upper_bound = Q3 + 1.5 * IQR
+        df_filtered = df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
+        return df_filtered
 
-def split_data(df, target_column, test_size=0.2, random_state=42):
-    """Splits the data into training and testing sets."""
-    X = df.drop(target_column, axis=1)
-    y = df[target_column]
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
-    return X_train, X_test, y_train, y_test
+    dataset = remove_outliers_iqr(dataset, 'Insulin')
+
+    # --- Handling Class Imbalance (for demonstration, you might want to handle this differently in prediction) ---
+    smote = SMOTE(random_state=42)
+    X = dataset.drop('Outcome', axis=1)
+    y = dataset['Outcome']
+    X_resampled, y_resampled = smote.fit_resample(X, y)
+    dataset_resampled = pd.concat([pd.DataFrame(X_resampled), pd.DataFrame(y_resampled)], axis=1)
+
+    # --- Feature Scaling ---
+    X_scaled = scaler.fit_transform(dataset_resampled.drop('Outcome', axis=1))
+    return X_scaled, dataset_resampled['Outcome'], scaler # Return the scaler as well
+
+if __name__ == '__main__':
+    # Example usage
+    script_dir = os.path.dirname(__file__)
+    dataset_path = os.path.join(script_dir, '..', '..', 'data', 'train', 'diabetes.csv')
+    X_processed, y_processed, fitted_scaler = preprocess_data(dataset_path)
+    print("Preprocessing done. Shape of processed data:", X_processed.shape)
