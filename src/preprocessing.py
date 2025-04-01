@@ -6,11 +6,18 @@ import os
 
 scaler = MinMaxScaler()
 
-def preprocess_data(dataset_path):
+def preprocess_data(data):
     """
     Preprocesses the diabetes dataset.
+    Accepts either a file path or a pandas DataFrame.
     """
-    dataset = pd.read_csv(dataset_path)
+    if isinstance(data, str):
+        dataset = pd.read_csv(data)
+    elif isinstance(data, pd.DataFrame):
+        dataset = data.copy() # Work with a copy to avoid modifying the original DataFrame
+    else:
+        raise ValueError("Input must be a file path (str) or a pandas DataFrame.")
+
     dataset[["Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI"]] = dataset[["Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI"]].replace(0, np.nan)
     # Impute NaN values (using median for robustness)
     dataset['Glucose'] = dataset['Glucose'].fillna(dataset['Glucose'].median())

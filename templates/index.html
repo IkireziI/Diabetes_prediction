@@ -7,7 +7,6 @@
 <body>
     <div class="container">
         <h1>Diabetes Prediction</h1>
-        <p><a href="{{ url_for('static', filename='test.txt') }}">Test Static File</a></p>
         <form method="POST" action="/predict">
             <label for="pregnancies">Pregnancies:</label><br>
             <input type="number" id="pregnancies" name="pregnancies"><br><br>
@@ -36,5 +35,24 @@
             <input type="submit" value="Predict">
         </form>
     </div>
+
+    <hr>
+
+    <h2>Retrain Your Model</h2>
+    <div class="retrain-section">
+        <form method="POST" action="/upload" enctype="multipart/form-data">
+            <label for="file">Upload New Training Data (CSV format):</label>
+            <input type="file" name="file" id="file" required>
+            <button type="submit">Upload File</button>
+        </form>
+        {% if upload_message %}
+            <p class="upload-status">{{ upload_message }} <a href="{{ url_for('home') }}">Go Back to Prediction Form</a></p>
+        {% endif %}
+        <button onclick="window.location.href='/retrain'">Retrain Model</button>
+        {% if retrain_message %}
+            <p class="retrain-status">{{ retrain_message }} <a href="{{ url_for('home') }}">Go Back to Prediction Form</a></p>
+        {% endif %}
+    </div>
+
 </body>
 </html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Retrain Status</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Retrain Status</h1>
+        {% if message %}
+            <p class="status-message">{{ message }}</p>
+        {% endif %}
+        <a href="{{ url_for('home') }}" class="button">Go Back to Prediction Form</a>
+    </div>
+</body>
+</html>
