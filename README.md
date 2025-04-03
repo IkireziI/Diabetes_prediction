@@ -2,6 +2,10 @@
 
 This project focuses on developing a machine learning model to predict the likelihood of diabetes in patients. Leveraging a dataset containing various health indicators such as Glucose level, Insulin, Age, and BMI, the goal is to create an accurate and reliable predictive tool. This project employs a neural network model trained on this data to classify individuals as either having diabetes or not. The resulting model can be used to identify individuals who may be at risk and could benefit from further medical evaluation.
 
+**video presentation link**
+
+[presentation link]
+
 
 
 
